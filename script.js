@@ -1,5 +1,5 @@
 var key = "b7015ee8f3fd69eb81a57931e1dd354e";
-var city = document.getElementById;
+var city = document.getElementById("city-search").value;
 var baseUrl = "https://api.openweathermap.org/data/2.5/"
 // lat=40.7608&lon=111.8910&appid="+key
 var submitBtn = document.getElementById("submit-button")
@@ -34,8 +34,16 @@ function getFiveDay(city) {
                 icon.src = "https://openweathermap.org/img/wn/"+day.weather[0].icon+"@2x.png"
                 container.appendChild(icon)
                 var temp= document.createElement("p")
-                temp.innerText = day.main.temp + "F"
+                temp.innerText = "Temp: " + day.main.temp + "F"
                 container.appendChild(temp)
+                document.getElementById("forecast").appendChild(container)
+                var humidity = document.createElement("p")
+                humidity.innerText = "Humidity: " + day.main.humidity + "%"
+                container.appendChild(humidity)
+                document.getElementById("forecast").appendChild(container)
+                var windspeed = document.createElement("p")
+                windspeed.innerText = "Windspeed: "+ day.wind.speed+"mph"
+                container.appendChild(windspeed)
                 document.getElementById("forecast").appendChild(container)
             }
         });
@@ -45,24 +53,31 @@ function displayWeather(data) {
     var currentTemp = document.getElementById("Temp")
     var windSpeed = document.getElementById("Wind")
     var humidity = document.getElementById("Humidity")
-    var icon = document.getElementById("Icon")
+    var icon = document.getElementById("Current-Icon")
+    icon.src = "https://openweathermap.org/img/wn/" + data.weather[0].icon + "@2x.png"
     currentTemp.textContent = data.main.temp + "F"
     windSpeed.textContent = data.wind.speed + " mph"
     humidity.textContent = data.main.humidity + " %"
-    icon.src = "https://openweathermap.org/img/wn/" + data.weather[0].icon + ".png"
 }
 
 function searchWeather(event) {
-    event.preventDefault()
-    var searchCity = document.getElementById("city-search")
-    var city = searchCity.value.trim()
-    getWeather(city)
+    event.preventDefault();
+    var searchCity = document.getElementById("city-search");
+    var city = searchCity.value.trim();
+    getWeather(city);
 
-    //add localstorage array searched cities
+    // Save the searched city in local storage
+    var searchedCities = JSON.parse(localStorage.getItem("searchedCities")) || [];
+    if (!searchedCities.includes(city)) {
+        searchedCities.push(city);
+        localStorage.setItem("searchedCities", JSON.stringify(searchedCities));
+    }
 }
 
-function clearSearch() {
 
+function clearSearch() {
+    localStorage.removeItem("searchedCities");
+    // Clear the search history display on the UI as well
 }
 submitBtn.addEventListener("click", searchWeather)
 clearBtn.addEventListener("click", clearSearch)
